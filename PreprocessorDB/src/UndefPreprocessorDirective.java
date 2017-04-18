@@ -9,4 +9,8 @@ public class UndefPreprocessorDirective implements IPreprocessorDirective {
 	public void setName(String name) {
 		this.name = name;
 	}
+
+	public Object accept(IPreprocessorVisitor visitor) {
+		return visitor.visit(this);
+	}
 }

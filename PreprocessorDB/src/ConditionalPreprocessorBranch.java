@@ -1,6 +1,7 @@
+
 import java.util.List;
 
-public abstract class ConditionalPreprocessorBranch implements IConditionalPreprocessorBranch {
+public abstract class ConditionalPreprocessorBranch implements IConditionalPreprocessorBranch, IPreprocessorContainer {
 	private List<IPreprocessorDirective> preprocessorDirectives;
 
 	public List<IPreprocessorDirective> getPreprocessorDirectives() {
@@ -10,4 +11,6 @@ public abstract class ConditionalPreprocessorBranch implements IConditionalPrepr
 	public void setPreprocessorDirectives(List<IPreprocessorDirective> preprocessorDirectives) {
 		this.preprocessorDirectives = preprocessorDirectives;
 	}
+
+	public abstract Object accept(IPreprocessorVisitor visitor);
 }

@@ -1,4 +1,4 @@
 
-public interface IConditionalPreprocessorBranch {
+public interface IConditionalPreprocessorBranch extends IPreprocessorVisitable {
 
 }

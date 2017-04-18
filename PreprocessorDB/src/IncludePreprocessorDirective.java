@@ -19,4 +19,8 @@ public class IncludePreprocessorDirective implements IPreprocessorDirective {
 	public void setKind(IncludePathKind kind) {
 		this.kind = kind;
 	}
+
+	public Object accept(IPreprocessorVisitor visitor) {
+		return visitor.visit(this);
+	}
 }

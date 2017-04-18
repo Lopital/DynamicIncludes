@@ -10,4 +10,8 @@ public class PreprocessorCondition {
 	public void setCondition(String condition) {
 		this.condition = condition;
 	}
+
+	public Object accept(IPreprocessorVisitor visitor) {
+		return visitor.visit(this);
+	}
 }

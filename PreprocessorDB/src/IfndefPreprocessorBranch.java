@@ -10,4 +10,9 @@ public class IfndefPreprocessorBranch extends ConditionalPreprocessorBranch
 	public void setName(String name) {
 		this.name = name;
 	}
+
+	@Override
+	public Object accept(IPreprocessorVisitor visitor) {
+		return visitor.visit(this);
+	}
 }

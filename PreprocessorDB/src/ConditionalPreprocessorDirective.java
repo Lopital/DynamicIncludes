@@ -1,3 +1,4 @@
+
 import java.util.List;
 
 public class ConditionalPreprocessorDirective implements IPreprocessorDirective {
@@ -19,5 +20,9 @@ public class ConditionalPreprocessorDirective implements IPreprocessorDirective 
 
 	public void setBranchs(List<IConditionalPreprocessorSecondBranch> branchs) {
 		this.branchs = branchs;
+	}
+
+	public Object accept(IPreprocessorVisitor visitor) {
+		return visitor.visit(this);
 	}
 }

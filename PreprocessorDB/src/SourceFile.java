@@ -1,14 +1,19 @@
+
 import java.util.List;
 
-public class SourceFile {
+public class SourceFile implements IPreprocessorContainer {
 
-	private List<IPreprocessorDirective> preprocessorDirective;
+	private List<IPreprocessorDirective> preprocessorDirectives;
 
-	public List<IPreprocessorDirective> getPreprocessorDirective() {
-		return preprocessorDirective;
+	public List<IPreprocessorDirective> getPreprocessorDirectives() {
+		return preprocessorDirectives;
 	}
 
-	public void setPreprocessorDirective(List<IPreprocessorDirective> preprocessorDirective) {
-		this.preprocessorDirective = preprocessorDirective;
+	public void setPreprocessorDirectives(List<IPreprocessorDirective> preprocessorDirectives) {
+		this.preprocessorDirectives = preprocessorDirectives;
+	}
+
+	public Object accept(IPreprocessorVisitor visitor) {
+		return visitor.visit(this);
 	}
 }

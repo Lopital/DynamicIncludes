@@ -1,3 +1,4 @@
+
 import java.util.List;
 
 public class DefinePreprocessorDirective implements IPreprocessorDirective {
@@ -29,4 +30,7 @@ public class DefinePreprocessorDirective implements IPreprocessorDirective {
 		this.value = value;
 	}
 
+	public Object accept(IPreprocessorVisitor visitor) {
+		return visitor.visit(this);
+	}
 }

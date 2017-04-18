@@ -10,4 +10,9 @@ public class ElifPreprocessorBranch extends ConditionalPreprocessorBranch
 	public void setCondition(PreprocessorCondition condition) {
 		this.condition = condition;
 	}
+
+	@Override
+	public Object accept(IPreprocessorVisitor visitor) {
+		return visitor.visit(this);
+	}
 }

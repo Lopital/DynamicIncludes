@@ -1,4 +1,4 @@
 
-public interface IPreprocessorDirective {
-	
+public interface IPreprocessorDirective extends IPreprocessorVisitable {
+
 }
