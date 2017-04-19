@@ -1,7 +1,7 @@
 
 import java.util.List;
 
-public class ConditionalPreprocessorDirective implements IPreprocessorDirective {
+public class ConditionalPreprocessorDirective extends PreprocessorDirective {
 
 	private IConditionalPreprocessorBranch ifBranch;
 	private List<IConditionalPreprocessorSecondBranch> branchs;

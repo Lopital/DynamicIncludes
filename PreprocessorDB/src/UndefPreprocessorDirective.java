@@ -1,5 +1,5 @@
 
-public class UndefPreprocessorDirective implements IPreprocessorDirective {
+public class UndefPreprocessorDirective extends PreprocessorDirective {
 	private String name;
 
 	public String getName() {

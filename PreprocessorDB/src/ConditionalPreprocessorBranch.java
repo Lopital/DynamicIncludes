@@ -1,16 +1,29 @@
 
-import java.util.List;
+public abstract class ConditionalPreprocessorBranch extends PreprocessorContainer
+		implements IConditionalPreprocessorBranch {
+	private PreprocessorLocation startLocation;
+	private PreprocessorLocation endLocation;
 
-public abstract class ConditionalPreprocessorBranch implements IConditionalPreprocessorBranch, IPreprocessorContainer {
-	private List<IPreprocessorDirective> preprocessorDirectives;
-
-	public List<IPreprocessorDirective> getPreprocessorDirectives() {
-		return preprocessorDirectives;
+	@Override
+	public PreprocessorLocation getStartLocation() {
+		return startLocation;
 	}
 
-	public void setPreprocessorDirectives(List<IPreprocessorDirective> preprocessorDirectives) {
-		this.preprocessorDirectives = preprocessorDirectives;
+	@Override
+	public void setStartLocation(PreprocessorLocation location) {
+		startLocation = location;
+	}
+
+	@Override
+	public PreprocessorLocation getEndLocation() {
+		return endLocation;
+	}
+
+	@Override
+	public void setEndLocation(PreprocessorLocation location) {
+		endLocation = location;
 	}
 
 	public abstract Object accept(IPreprocessorVisitor visitor);
+
 }

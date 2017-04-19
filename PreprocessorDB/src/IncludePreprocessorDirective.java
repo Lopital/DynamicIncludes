@@ -1,5 +1,5 @@
 
-public class IncludePreprocessorDirective implements IPreprocessorDirective {
+public class IncludePreprocessorDirective extends PreprocessorDirective {
 
 	private String filePath;
 	private IncludePathKind kind;

@@ -1,7 +1,7 @@
 
 import java.util.List;
 
-public class DefinePreprocessorDirective implements IPreprocessorDirective {
+public class DefinePreprocessorDirective extends PreprocessorDirective {
 	private String name;
 	private List<String> parameters;
 	private String value;

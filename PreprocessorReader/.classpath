@@ -8,5 +8,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="/AntlrLib/antlr-4.6-complete.jar" sourcepath="/AntlrLib/antlr4-master.zip"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/PreprocessorDB"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

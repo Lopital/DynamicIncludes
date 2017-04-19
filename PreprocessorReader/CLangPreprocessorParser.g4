@@ -2,50 +2,52 @@ parser grammar CLangPreprocessorParser;
 
 options { tokenVocab=CLangPreprocessorLexer; }
 
+sourceFile : preprocessorDirective* ;
+
 preprocessorDirective : 
 	( includePrep
 	| definePrep
 	| undefPrep
 	| ifPrep
-	| elifPrep
 	| ifdefPrep
 	| ifndefPrep
+	| elifPrep
 	| elsePrep
 	| endifPrep
 	) NL
 	;
 
-includePrep : INCLUDE 
+includePrep : keyword=INCLUDE 
 	( macro=IDENT
 	| SYS_INCLUDE_START systemFilePath=FILE_PATH SYS_INCLUDE_END
 	| LOCAL_INCLUDE_START localFilePath=FILE_PATH LOCAL_INCLUDE_END
 	)
 	;
 
-definePrep : DEFINE macro=IDENT params=parameters? valueParts+=VALUE_PART*
+definePrep : keyword=DEFINE macro=IDENT param=parameters? valueParts+=VALUE_PART*
 	;
 
-parameters : O_P (param+=IDENT (COMMA param+=IDENT)*)? C_P
+parameters : O_P (names+=IDENT (COMMA names+=IDENT)*)? C_P
 	;
 
-undefPrep : UNDEF macro=IDENT
+undefPrep : keyword=UNDEF macro=IDENT
 	;
 
-ifPrep : IF conditionParts+=CONDITION_PART
+ifPrep : keyword=IF conditionParts+=CONDITION_PART
 	;
 
-elifPrep : ELIF conditionParts+=CONDITION_PART
+ifdefPrep : keyword=IFDEF macro=IDENT
+	;
+
+ifndefPrep : keyword=IFNDEF macro=IDENT
+	;
+
+elifPrep : keyword=ELIF conditionParts+=CONDITION_PART
 	;
 	
-ifdefPrep : IFDEF macro=IDENT
+elsePrep : keyword=ELSE
 	;
 
-ifndefPrep : IFNDEF macro=IDENT
-	;
-
-elsePrep : ELSE
-	;
-
-endifPrep : ENDIF
+endifPrep : keyword=ENDIF
 	;
 
