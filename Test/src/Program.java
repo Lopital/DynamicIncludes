@@ -15,6 +15,7 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.net.URLDecoder;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
@@ -22,6 +23,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.security.CodeSource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -30,6 +32,7 @@ import java.util.stream.Stream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Token;
 import org.antlr.runtime.CharStream;
+import org.antlr.v4.codegen.model.chunk.ThisRulePropertyRef_ctx;
 import org.antlr.v4.runtime.ANTLRErrorListener;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.TokenStream;
@@ -56,37 +59,42 @@ public class Program {
 	/**
 	 * @param args
 	 */
+	@SuppressWarnings("unused")
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		// AnalizeCPreprocessorsListener listener = new
 		// AnalizeCPreprocessorsListener();
 		// RunAntlrOnFile("d:\\Temp\\CPrep\\text.c", listener);
+		Path CurrentDirPath = null;
 		try {
-			Config config = getFiles("D:\\SpaiucD\\Projects\\_Other_\\EclipseProjects\\TestResources\\config.txt");
-			String OutputDir = "D:\\SpaiucD\\Projects\\_Other_\\EclipseProjects\\TestResources\\PP";
-			String OutputDirTest = "D:\\SpaiucD\\Projects\\_Other_\\EclipseProjects\\TestResources\\PP_Test";
+			CurrentDirPath = getJarContainingFolder(Program.class);
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			return;
+		}
+		
+		Path ConfigFilePath = CurrentDirPath.resolve("TestResources/config.txt").normalize();
+		Path OutputDir = CurrentDirPath.resolve("../../../TestOutput/PP").normalize();
+		Path OutputDirTest = CurrentDirPath.resolve("../../../TestOutput/PP_Test").normalize();
 
-			Path dir = Paths.get(OutputDir);
-			if (Files.exists(dir, LinkOption.NOFOLLOW_LINKS)) {
-				clearDirectory(dir);
+		try {
+			Config config = getFiles(ConfigFilePath);
+
+			if (Files.exists(OutputDir, LinkOption.NOFOLLOW_LINKS)) {
+				clearDirectory(OutputDir);
 			}
-			Path dirTest = Paths.get(OutputDirTest);
-			if (Files.exists(dirTest, LinkOption.NOFOLLOW_LINKS)) {
-				clearDirectory(dirTest);
+			if (Files.exists(OutputDirTest, LinkOption.NOFOLLOW_LINKS)) {
+				clearDirectory(OutputDirTest);
 			}
 
 			for (String sourceFilePath : config.Files) {
 				System.out.println(sourceFilePath);
-				String destinationFilePath = OutputDir + sourceFilePath.substring(config.RootPath.length());
-				// if
-				// (!sourceFilePath.equals("D:\\SpaiucD\\Projects\\_Other_\\EclipseProjects\\TestResources"
-				// +
-				// "\\SOURCE\\MainMicro\\Application\\YSC\\YSC_MAIN\\SOURCE\\ysc_logger.c"))
-				// {
-				// continue;
-				// }
+				String destinationFullFilePath = OutputDir + sourceFilePath;
+				String sourceFullFilePath = config.RootPath + sourceFilePath;
+				if (false && !sourceFilePath.endsWith("\\file_name.c")) {
+					continue;
+				}
 				try {
-					extractPreprocessors(sourceFilePath, destinationFilePath);
+					extractPreprocessors(sourceFullFilePath, destinationFullFilePath);
 				} catch (UnsupportedEncodingException e) {
 					e.printStackTrace();
 				} catch (FileNotFoundException e) {
@@ -95,9 +103,9 @@ public class Program {
 					e.printStackTrace();
 				}
 
-				String destinationFilePathTest = OutputDirTest + sourceFilePath.substring(config.RootPath.length());
+				String destinationFullFilePathTest = OutputDirTest + sourceFilePath;
 				try {
-					extractPreprocessorsTest(sourceFilePath, destinationFilePathTest);
+					extractPreprocessorsTest(sourceFullFilePath, destinationFullFilePathTest);
 				} catch (UnsupportedEncodingException e) {
 					e.printStackTrace();
 				} catch (FileNotFoundException e) {
@@ -114,6 +122,23 @@ public class Program {
 			e.printStackTrace();
 		}
 
+	}
+
+	public static Path getJarContainingFolder(Class aclass) throws Exception {
+		CodeSource codeSource = aclass.getProtectionDomain().getCodeSource();
+
+		Path jarFile;
+
+		if (codeSource.getLocation() != null) {
+
+			jarFile = Paths.get(codeSource.getLocation().toURI());
+		} else {
+			String path = aclass.getResource(aclass.getSimpleName() + ".class").getPath();
+			String jarFilePath = path.substring(path.indexOf(":") + 1, path.indexOf("!"));
+			jarFilePath = URLDecoder.decode(jarFilePath, "UTF-8");
+			jarFile = Paths.get(jarFilePath);
+		}
+		return jarFile.getParent();
 	}
 
 	public static void clearDirectory(final Path path) throws IOException {
@@ -151,23 +176,18 @@ public class Program {
 		}
 	}
 
-	private static Config getFiles(String filePath) throws IOException {
+	private static Config getFiles(Path filePath) throws IOException {
 		Config config = new Config();
 		config.Files = new ArrayList<String>();
 
-		File file = new File(filePath);
+		File file = filePath.toFile();
 		FileReader fileReader = new FileReader(file);
+		config.RootPath = filePath.getParent().toString();
 		BufferedReader bufferedReader = new BufferedReader(fileReader);
 		String line;
-		int index = 0;
 		while ((line = bufferedReader.readLine()) != null) {
-			if (file.length() > 0) {
-				if (index == 0) {
-					config.RootPath = line;
-				} else {
-					config.Files.add(line);
-				}
-				index++;
+			if (line.length() > 0) {
+				config.Files.add(line);
 			}
 		}
 		bufferedReader.close();
