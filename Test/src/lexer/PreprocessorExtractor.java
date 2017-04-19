@@ -1,7 +1,6 @@
 package lexer;
 
 import java.nio.CharBuffer;
-import java.util.logging.Handler;
 
 public class PreprocessorExtractor {
 

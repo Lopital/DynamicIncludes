@@ -1,17 +1,13 @@
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.CharArrayReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-//import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
@@ -26,34 +22,15 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.security.CodeSource;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
-import java.util.stream.Stream;
-
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Token;
-import org.antlr.runtime.CharStream;
-import org.antlr.v4.codegen.model.chunk.ThisRulePropertyRef_ctx;
 import org.antlr.v4.runtime.ANTLRErrorListener;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.TokenStream;
-import org.antlr.v4.runtime.atn.LexerATNSimulator;
-
 import lexer.PreprocessorExtractor;
-
 import static java.nio.file.FileVisitResult.*;
-
-import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
-import java.nio.charset.*;
 
-/**
- * 
- */
-
-/**
- * @author SpaiucD
- *
- */
 public class Program {
 
 	/**
@@ -64,14 +41,15 @@ public class Program {
 		// AnalizeCPreprocessorsListener listener = new
 		// AnalizeCPreprocessorsListener();
 		// RunAntlrOnFile("d:\\Temp\\CPrep\\text.c", listener);
+
 		Path CurrentDirPath = null;
 		try {
 			CurrentDirPath = getJarContainingFolder(Program.class);
 		} catch (Exception e1) {
-			// TODO Auto-generated catch block
+			e1.printStackTrace();
 			return;
 		}
-		
+
 		Path ConfigFilePath = CurrentDirPath.resolve("TestResources/config.txt").normalize();
 		Path OutputDir = CurrentDirPath.resolve("../../../TestOutput/PP").normalize();
 		Path OutputDirTest = CurrentDirPath.resolve("../../../TestOutput/PP_Test").normalize();
@@ -124,7 +102,7 @@ public class Program {
 
 	}
 
-	public static Path getJarContainingFolder(Class aclass) throws Exception {
+	public static Path getJarContainingFolder(Class<?> aclass) throws Exception {
 		CodeSource codeSource = aclass.getProtectionDomain().getCodeSource();
 
 		Path jarFile;
@@ -194,6 +172,7 @@ public class Program {
 		return config;
 	}
 
+	@SuppressWarnings("unused")
 	private static void runAntlrOnFile(String filePath, AnalizeCPreprocessorsListener listener) {
 		CLangPreprocessorLexer lexer = new CLangPreprocessorLexer(new ANTLRInputStream(filePath));
 		TokenStream tokenStream = new CommonTokenStream(lexer);
@@ -235,6 +214,7 @@ public class Program {
 		CharBuffer cBuffer = CharBuffer.allocate(size);
 		Reader reader = new InputStreamReader(new FileInputStream(source), "Cp1252");
 		reader.read(cBuffer);
+		reader.close();
 		cBuffer.flip();
 		return cBuffer;
 	}
