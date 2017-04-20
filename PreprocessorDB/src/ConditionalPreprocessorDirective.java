@@ -1,4 +1,5 @@
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ConditionalPreprocessorDirective extends PreprocessorDirective {
@@ -22,6 +23,10 @@ public class ConditionalPreprocessorDirective extends PreprocessorDirective {
 		this.branchs = branchs;
 	}
 
+	public ConditionalPreprocessorDirective(){
+		this.branchs = new ArrayList<>();
+	}
+	
 	public Object accept(IPreprocessorVisitor visitor) {
 		return visitor.visit(this);
 	}
