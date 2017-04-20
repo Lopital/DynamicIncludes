@@ -2,6 +2,7 @@
 public class IncludePreprocessorDirective extends PreprocessorDirective {
 
 	private String filePath;
+	private String macro;
 	private IncludePathKind kind;
 
 	public String getFilePath() {
@@ -10,6 +11,14 @@ public class IncludePreprocessorDirective extends PreprocessorDirective {
 
 	public void setFilePath(String filePath) {
 		this.filePath = filePath;
+	}
+
+	public String getMacro() {
+		return macro;
+	}
+
+	public void setMacro(String macro) {
+		this.macro = macro;
 	}
 
 	public IncludePathKind getKind() {
