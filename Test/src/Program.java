@@ -22,11 +22,9 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.security.CodeSource;
 import java.util.ArrayList;
 import java.util.List;
-import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.ANTLRErrorListener;
 import org.antlr.v4.runtime.ANTLRInputStream;
-import org.antlr.v4.runtime.TokenStream;
 import lexer.PreprocessorExtractor;
 import static java.nio.file.FileVisitResult.*;
 import java.nio.CharBuffer;
@@ -50,29 +48,38 @@ public class Program {
 			return;
 		}
 
-		Path ConfigFilePath = CurrentDirPath.resolve("TestResources/config.txt").normalize();
-		Path OutputDir = CurrentDirPath.resolve("../../../TestOutput/PP").normalize();
-		Path OutputDirTest = CurrentDirPath.resolve("../../../TestOutput/PP_Test").normalize();
+		Path configFilePath = CurrentDirPath.resolve("TestResources/config.txt").normalize();
+		Path outputDirLexer = CurrentDirPath.resolve("../../../TestOutput/PP_Lexer").normalize();
+		Path outputDirParser = CurrentDirPath.resolve("../../../TestOutput/PP_Parser").normalize();
+		Path outputDirTest = CurrentDirPath.resolve("../../../TestOutput/PP_Test").normalize();
 
 		try {
-			Config config = getFiles(ConfigFilePath);
+			Config config = getFiles(configFilePath);
 
-			if (Files.exists(OutputDir, LinkOption.NOFOLLOW_LINKS)) {
-				clearDirectory(OutputDir);
+			if (Files.exists(outputDirLexer, LinkOption.NOFOLLOW_LINKS)) {
+				clearDirectory(outputDirLexer);
 			}
-			if (Files.exists(OutputDirTest, LinkOption.NOFOLLOW_LINKS)) {
-				clearDirectory(OutputDirTest);
+			if (Files.exists(outputDirParser, LinkOption.NOFOLLOW_LINKS)) {
+				clearDirectory(outputDirParser);
+			}
+			if (Files.exists(outputDirTest, LinkOption.NOFOLLOW_LINKS)) {
+				clearDirectory(outputDirTest);
 			}
 
 			for (String sourceFilePath : config.Files) {
 				System.out.println(sourceFilePath);
-				String destinationFullFilePath = OutputDir + sourceFilePath;
+				String destinationLexerFullFilePath = outputDirLexer + sourceFilePath;
+				String destinationParserFullFilePath = outputDirParser + sourceFilePath;
+				String destinationTestFullFilePath = outputDirTest + sourceFilePath;
 				String sourceFullFilePath = config.RootPath + sourceFilePath;
+
+				// debug condition
 				if (false && !sourceFilePath.endsWith("\\file_name.c")) {
 					continue;
 				}
+
 				try {
-					extractPreprocessors(sourceFullFilePath, destinationFullFilePath);
+					extractPreprocessorsLexer(sourceFullFilePath, destinationLexerFullFilePath);
 				} catch (UnsupportedEncodingException e) {
 					e.printStackTrace();
 				} catch (FileNotFoundException e) {
@@ -81,9 +88,18 @@ public class Program {
 					e.printStackTrace();
 				}
 
-				String destinationFullFilePathTest = OutputDirTest + sourceFilePath;
 				try {
-					extractPreprocessorsTest(sourceFullFilePath, destinationFullFilePathTest);
+					extractPreprocessorsParser(sourceFullFilePath, destinationParserFullFilePath);
+				} catch (UnsupportedEncodingException e1) {
+					e1.printStackTrace();
+				} catch (FileNotFoundException e1) {
+					e1.printStackTrace();
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+
+				try {
+					extractPreprocessorsTest(sourceFullFilePath, destinationTestFullFilePath);
 				} catch (UnsupportedEncodingException e) {
 					e.printStackTrace();
 				} catch (FileNotFoundException e) {
@@ -92,16 +108,17 @@ public class Program {
 					e.printStackTrace();
 				}
 			}
-		} catch (
-
-		FileNotFoundException e) {
+		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
+		} finally {
+
 		}
 
 	}
 
+	// Utils
 	public static Path getJarContainingFolder(Class<?> aclass) throws Exception {
 		CodeSource codeSource = aclass.getProtectionDomain().getCodeSource();
 
@@ -172,22 +189,11 @@ public class Program {
 		return config;
 	}
 
-	@SuppressWarnings("unused")
-	private static void runAntlrOnFile(String filePath, AnalizeCPreprocessorsListener listener) {
-		CLangPreprocessorLexer lexer = new CLangPreprocessorLexer(new ANTLRInputStream(filePath));
-		TokenStream tokenStream = new CommonTokenStream(lexer);
-		CLangPreprocessorParser parser = new CLangPreprocessorParser(tokenStream);
-		parser.setBuildParseTree(false);
-		parser.addParseListener(listener);
-		parser.preprocessorDirective();
+	private static String removeWhitespaces(String text) {
+		return text.replaceAll("\\s", "");
 	}
 
-	private static void extractPreprocessors(String source, String destination)
-			throws UnsupportedEncodingException, FileNotFoundException, IOException {
-		List<? extends Token> tokens = GetLexerTokensFromFile(source);
-		writeTokensToFile(destination, tokens);
-	}
-
+	// Test
 	private static void extractPreprocessorsTest(String source, String destination)
 			throws UnsupportedEncodingException, FileNotFoundException, IOException {
 		CharBuffer cBuffer = getCharBuffer(source);
@@ -204,7 +210,7 @@ public class Program {
 		File dir = file.getParentFile();
 		dir.mkdirs();
 		try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(destination), "Cp1252"))) {
-			writer.write(cBuffer.toString());
+			writer.write(removeWhitespaces(cBuffer.toString()));
 		}
 	}
 
@@ -217,6 +223,13 @@ public class Program {
 		reader.close();
 		cBuffer.flip();
 		return cBuffer;
+	}
+
+	// Lexer
+	private static void extractPreprocessorsLexer(String source, String destination)
+			throws UnsupportedEncodingException, FileNotFoundException, IOException {
+		List<? extends Token> tokens = GetLexerTokensFromFile(source);
+		writeTokensToFile(destination, tokens);
 	}
 
 	private static ANTLRErrorListener listener = new LexerErrorWriter();
@@ -247,7 +260,32 @@ public class Program {
 			sb.append(token.getText());
 		}
 		try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filePath), "Cp1252"))) {
-			writer.write(sb.toString());
+			writer.write(removeWhitespaces(sb.toString()));
 		}
 	}
+
+	// Parser
+	private static GrammarManager manager = new GrammarManager();
+
+	private static void extractPreprocessorsParser(String sourceFullFilePath, String destinationParserFullFilePath)
+			throws UnsupportedEncodingException, FileNotFoundException, IOException {
+		SourceFile fileSource = manager.extractPreprocessor(Paths.get(sourceFullFilePath));
+		PreprocessorDBWriterTest visitor = new PreprocessorDBWriterTest();
+		visitor.init();
+		fileSource.accept(visitor);
+		String text = visitor.getSb().toString();
+
+		writeTextToFile(destinationParserFullFilePath, text);
+	}
+
+	private static void writeTextToFile(String filePath, String text)
+			throws IOException, UnsupportedEncodingException, FileNotFoundException {
+		File file = Paths.get(filePath).toFile();
+		File dir = file.getParentFile();
+		dir.mkdirs();
+		try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filePath), "Cp1252"))) {
+			writer.write(removeWhitespaces(text));
+		}
+	}
+
 }
