@@ -52,7 +52,7 @@ public class PreprocessorExtractor extends CLangPreprocessorParserBaseListener {
 		IncludePreprocessorDirective includePreprocessorDirective = new IncludePreprocessorDirective();
 
 		PreprocessorLocation location = new PreprocessorLocation();
-		location.setLine(ctx.keyword.getLine());
+		location.setLine(ctx.start.getLine());
 		includePreprocessorDirective.setLocation(location);
 
 		if (ctx.localFilePath != null) {
@@ -61,6 +61,9 @@ public class PreprocessorExtractor extends CLangPreprocessorParserBaseListener {
 		} else if (ctx.systemFilePath != null) {
 			includePreprocessorDirective.setFilePath(ctx.systemFilePath.getText());
 			includePreprocessorDirective.setKind(IncludePathKind.SYSTEM_INCLUDE);
+		} else if (ctx.macro != null) {
+			includePreprocessorDirective.setMacro(ctx.macro.getText());
+			includePreprocessorDirective.setKind(IncludePathKind.MACRO);
 		} else {
 			// TODO: save error.
 			includePreprocessorDirective.setFilePath(null);
@@ -78,7 +81,7 @@ public class PreprocessorExtractor extends CLangPreprocessorParserBaseListener {
 		DefinePreprocessorDirective definePreprocessorDirective = new DefinePreprocessorDirective();
 
 		PreprocessorLocation location = new PreprocessorLocation();
-		location.setLine(ctx.keyword.getLine());
+		location.setLine(ctx.start.getLine());
 		definePreprocessorDirective.setLocation(location);
 
 		definePreprocessorDirective.setName(ctx.macro.getText());
@@ -122,7 +125,7 @@ public class PreprocessorExtractor extends CLangPreprocessorParserBaseListener {
 		UndefPreprocessorDirective undefPreprocessorDirective = new UndefPreprocessorDirective();
 
 		PreprocessorLocation location = new PreprocessorLocation();
-		location.setLine(ctx.keyword.getLine());
+		location.setLine(ctx.start.getLine());
 		undefPreprocessorDirective.setLocation(location);
 
 		undefPreprocessorDirective.setName(ctx.macro.getText());
@@ -138,7 +141,7 @@ public class PreprocessorExtractor extends CLangPreprocessorParserBaseListener {
 		ConditionalPreprocessorDirective conditionalPreprocessorDirective = new ConditionalPreprocessorDirective();
 
 		PreprocessorLocation location = new PreprocessorLocation();
-		location.setLine(ctx.keyword.getLine());
+		location.setLine(ctx.start.getLine());
 		conditionalPreprocessorDirective.setLocation(location);
 
 		IfPreprocessorBranch ifPreprocessorBranch = new IfPreprocessorBranch();
@@ -166,7 +169,7 @@ public class PreprocessorExtractor extends CLangPreprocessorParserBaseListener {
 		ConditionalPreprocessorDirective conditionalPreprocessorDirective = new ConditionalPreprocessorDirective();
 
 		PreprocessorLocation location = new PreprocessorLocation();
-		location.setLine(ctx.keyword.getLine());
+		location.setLine(ctx.start.getLine());
 		conditionalPreprocessorDirective.setLocation(location);
 
 		IfdefPreprocessorBranch ifdefPreprocessorBranch = new IfdefPreprocessorBranch();
@@ -188,7 +191,7 @@ public class PreprocessorExtractor extends CLangPreprocessorParserBaseListener {
 		ConditionalPreprocessorDirective conditionalPreprocessorDirective = new ConditionalPreprocessorDirective();
 
 		PreprocessorLocation location = new PreprocessorLocation();
-		location.setLine(ctx.keyword.getLine());
+		location.setLine(ctx.start.getLine());
 		conditionalPreprocessorDirective.setLocation(location);
 
 		IfndefPreprocessorBranch ifndefPreprocessorBranch = new IfndefPreprocessorBranch();
@@ -205,7 +208,7 @@ public class PreprocessorExtractor extends CLangPreprocessorParserBaseListener {
 		IConditionalPreprocessorBranch branch = (IConditionalPreprocessorBranch) preprocessorContainers.pop();
 
 		PreprocessorLocation location = new PreprocessorLocation();
-		location.setLine(ctx.keyword.getLine());
+		location.setLine(ctx.start.getLine());
 
 		branch.setEndLocation(location);
 	}
@@ -219,7 +222,7 @@ public class PreprocessorExtractor extends CLangPreprocessorParserBaseListener {
 		ElifPreprocessorBranch elifPreprocessorBranch = new ElifPreprocessorBranch();
 
 		PreprocessorLocation location = new PreprocessorLocation();
-		location.setLine(ctx.keyword.getLine());
+		location.setLine(ctx.start.getLine());
 		elifPreprocessorBranch.setStartLocation(location);
 
 		PreprocessorCondition preprocessorCondition = new PreprocessorCondition();
@@ -239,7 +242,7 @@ public class PreprocessorExtractor extends CLangPreprocessorParserBaseListener {
 		IConditionalPreprocessorBranch branch = (IConditionalPreprocessorBranch) preprocessorContainers.pop();
 
 		PreprocessorLocation location = new PreprocessorLocation();
-		location.setLine(ctx.keyword.getLine());
+		location.setLine(ctx.start.getLine());
 
 		branch.setEndLocation(location);
 	}
@@ -253,7 +256,7 @@ public class PreprocessorExtractor extends CLangPreprocessorParserBaseListener {
 		ElsePreprocessorBranch elsePreprocessorBranch = new ElsePreprocessorBranch();
 
 		PreprocessorLocation location = new PreprocessorLocation();
-		location.setLine(ctx.keyword.getLine());
+		location.setLine(ctx.start.getLine());
 		elsePreprocessorBranch.setStartLocation(location);
 
 		conditionalPreprocessorDirective.getBranchs().add(elsePreprocessorBranch);
@@ -265,7 +268,7 @@ public class PreprocessorExtractor extends CLangPreprocessorParserBaseListener {
 		IConditionalPreprocessorBranch branch = (IConditionalPreprocessorBranch) preprocessorContainers.pop();
 
 		PreprocessorLocation location = new PreprocessorLocation();
-		location.setLine(ctx.keyword.getLine());
+		location.setLine(ctx.start.getLine());
 
 		branch.setEndLocation(location);
 	}
