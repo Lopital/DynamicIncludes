@@ -28,6 +28,7 @@ import org.antlr.v4.runtime.ANTLRInputStream;
 import lexer.PreprocessorExtractor;
 import static java.nio.file.FileVisitResult.*;
 import java.nio.CharBuffer;
+import java.nio.charset.Charset;
 
 public class Program {
 
@@ -36,9 +37,6 @@ public class Program {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) {
-		// AnalizeCPreprocessorsListener listener = new
-		// AnalizeCPreprocessorsListener();
-		// RunAntlrOnFile("d:\\Temp\\CPrep\\text.c", listener);
 
 		Path CurrentDirPath = null;
 		try {
@@ -48,6 +46,7 @@ public class Program {
 			return;
 		}
 
+		Charset charsetCp1252 = Charset.forName("Cp1252");
 		Path configFilePath = CurrentDirPath.resolve("TestResources/config.txt").normalize();
 		Path outputDirLexer = CurrentDirPath.resolve("../../../TestOutput/PP_Lexer").normalize();
 		Path outputDirParser = CurrentDirPath.resolve("../../../TestOutput/PP_Parser").normalize();
@@ -79,7 +78,7 @@ public class Program {
 				}
 
 				try {
-					extractPreprocessorsLexer(sourceFullFilePath, destinationLexerFullFilePath);
+					extractPreprocessorsLexer(sourceFullFilePath, destinationLexerFullFilePath, charsetCp1252);
 				} catch (UnsupportedEncodingException e) {
 					e.printStackTrace();
 				} catch (FileNotFoundException e) {
@@ -89,7 +88,7 @@ public class Program {
 				}
 
 				try {
-					extractPreprocessorsParser(sourceFullFilePath, destinationParserFullFilePath);
+					extractPreprocessorsParser(sourceFullFilePath, destinationParserFullFilePath, charsetCp1252);
 				} catch (UnsupportedEncodingException e1) {
 					e1.printStackTrace();
 				} catch (FileNotFoundException e1) {
@@ -99,7 +98,7 @@ public class Program {
 				}
 
 				try {
-					extractPreprocessorsTest(sourceFullFilePath, destinationTestFullFilePath);
+					extractPreprocessorsTest(sourceFullFilePath, destinationTestFullFilePath, charsetCp1252);
 				} catch (UnsupportedEncodingException e) {
 					e.printStackTrace();
 				} catch (FileNotFoundException e) {
@@ -194,31 +193,31 @@ public class Program {
 	}
 
 	// Test
-	private static void extractPreprocessorsTest(String source, String destination)
+	private static void extractPreprocessorsTest(String source, String destination, Charset charset)
 			throws UnsupportedEncodingException, FileNotFoundException, IOException {
-		CharBuffer cBuffer = getCharBuffer(source);
+		CharBuffer cBuffer = getCharBuffer(source, charset);
 
 		PreprocessorExtractor.Instance.removeComments(cBuffer);
 		PreprocessorExtractor.Instance.extarctPreprocessorLines(cBuffer);
 
-		writeCharBufferToFile(destination, cBuffer);
+		writeCharBufferToFile(destination, cBuffer, charset);
 	}
 
-	private static void writeCharBufferToFile(String destination, CharBuffer cBuffer)
+	private static void writeCharBufferToFile(String destination, CharBuffer cBuffer, Charset charset)
 			throws IOException, UnsupportedEncodingException, FileNotFoundException {
 		File file = Paths.get(destination).toFile();
 		File dir = file.getParentFile();
 		dir.mkdirs();
-		try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(destination), "Cp1252"))) {
+		try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(destination), charset))) {
 			writer.write(removeWhitespaces(cBuffer.toString()));
 		}
 	}
 
-	private static CharBuffer getCharBuffer(String source)
+	private static CharBuffer getCharBuffer(String source, Charset charset)
 			throws UnsupportedEncodingException, FileNotFoundException, IOException {
 		int size = (int) new File(source).length();
 		CharBuffer cBuffer = CharBuffer.allocate(size);
-		Reader reader = new InputStreamReader(new FileInputStream(source), "Cp1252");
+		Reader reader = new InputStreamReader(new FileInputStream(source), charset);
 		reader.read(cBuffer);
 		reader.close();
 		cBuffer.flip();
@@ -226,19 +225,19 @@ public class Program {
 	}
 
 	// Lexer
-	private static void extractPreprocessorsLexer(String source, String destination)
+	private static void extractPreprocessorsLexer(String source, String destination, Charset charset)
 			throws UnsupportedEncodingException, FileNotFoundException, IOException {
-		List<? extends Token> tokens = GetLexerTokensFromFile(source);
-		writeTokensToFile(destination, tokens);
+		List<? extends Token> tokens = GetLexerTokensFromFile(source, charset);
+		writeTokensToFile(destination, tokens, charset);
 	}
 
 	private static ANTLRErrorListener listener = new LexerErrorWriter();
 
-	private static List<? extends Token> GetLexerTokensFromFile(String filePath) {
+	private static List<? extends Token> GetLexerTokensFromFile(String filePath, Charset charset) {
 		CLangPreprocessorLexer lexer = null;
 		try {
 			lexer = new CLangPreprocessorLexer(
-					new ANTLRInputStream(new InputStreamReader(new FileInputStream(filePath), "Cp1252")));
+					new ANTLRInputStream(new InputStreamReader(new FileInputStream(filePath), charset)));
 			lexer.removeErrorListeners();
 			lexer.addErrorListener(listener);
 			List<? extends Token> tokens = lexer.getAllTokens();
@@ -249,7 +248,7 @@ public class Program {
 		return new ArrayList<Token>();
 	}
 
-	private static void writeTokensToFile(String filePath, List<? extends Token> tokens)
+	private static void writeTokensToFile(String filePath, List<? extends Token> tokens, Charset charset)
 			throws UnsupportedEncodingException, FileNotFoundException, IOException {
 
 		File file = Paths.get(filePath).toFile();
@@ -259,7 +258,7 @@ public class Program {
 		for (Token token : tokens) {
 			sb.append(token.getText());
 		}
-		try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filePath), "Cp1252"))) {
+		try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filePath), charset))) {
 			writer.write(removeWhitespaces(sb.toString()));
 		}
 	}
@@ -267,23 +266,24 @@ public class Program {
 	// Parser
 	private static GrammarManager manager = new GrammarManager();
 
-	private static void extractPreprocessorsParser(String sourceFullFilePath, String destinationParserFullFilePath)
-			throws UnsupportedEncodingException, FileNotFoundException, IOException {
-		SourceFile fileSource = manager.extractPreprocessor(Paths.get(sourceFullFilePath));
+	private static void extractPreprocessorsParser(String sourceFullFilePath, String destinationParserFullFilePath,
+			Charset charset) throws UnsupportedEncodingException, FileNotFoundException, IOException {
+		SourceFilePreprocessorDirectives fileSource = manager.extractPreprocessor(Paths.get(sourceFullFilePath),
+				charset);
 		PreprocessorDBWriterTest visitor = new PreprocessorDBWriterTest();
 		visitor.init();
 		fileSource.accept(visitor);
 		String text = visitor.getSb().toString();
 
-		writeTextToFile(destinationParserFullFilePath, text);
+		writeTextToFile(destinationParserFullFilePath, text, charset);
 	}
 
-	private static void writeTextToFile(String filePath, String text)
+	private static void writeTextToFile(String filePath, String text, Charset charset)
 			throws IOException, UnsupportedEncodingException, FileNotFoundException {
 		File file = Paths.get(filePath).toFile();
 		File dir = file.getParentFile();
 		dir.mkdirs();
-		try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filePath), "Cp1252"))) {
+		try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filePath), charset))) {
 			writer.write(removeWhitespaces(text));
 		}
 	}
