@@ -1,4 +1,3 @@
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Stack;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -10,16 +9,15 @@ public class PreprocessorExtractor extends CLangPreprocessorParserBaseListener {
 
 	private Stack<IPreprocessorContainer> preprocessorContainers;
 
-	private SourceFile sourceFile;
+	private SourceFilePreprocessorDirectives sourceFile;
 
-	public SourceFile getSourceFile() {
+	public SourceFilePreprocessorDirectives getSourceFile() {
 		return sourceFile;
 	}
 
-	public void Init(Path filePath) {
+	public void Init() {
 		preprocessorContainers = new Stack<IPreprocessorContainer>();
-		sourceFile = new SourceFile();
-		sourceFile.setFilePath(filePath);
+		sourceFile = new SourceFilePreprocessorDirectives();
 	}
 
 	@Override
@@ -29,7 +27,7 @@ public class PreprocessorExtractor extends CLangPreprocessorParserBaseListener {
 
 	@Override
 	public void exitSourceFile(CLangPreprocessorParser.SourceFileContext ctx) {
-		sourceFile = (SourceFile) preprocessorContainers.pop();
+		sourceFile = (SourceFilePreprocessorDirectives) preprocessorContainers.pop();
 		preprocessorContainers = null;
 	}
 

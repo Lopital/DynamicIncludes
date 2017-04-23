@@ -13,7 +13,7 @@ public class PreprocessorDBWriterTest implements IPreprocessorVisitor {
 	}
 
 	@Override
-	public Object visit(SourceFile sourceFile) {
+	public Object visit(SourceFilePreprocessorDirectives sourceFile) {
 		init();
 		appendPreprocessorList(sourceFile.getPreprocessorDirectives());
 		return null;

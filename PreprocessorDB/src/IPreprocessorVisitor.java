@@ -1,7 +1,7 @@
 
 public interface IPreprocessorVisitor {
 
-	Object visit(SourceFile sourceFile);
+	Object visit(SourceFilePreprocessorDirectives sourceFile);
 
 	Object visit(IncludePreprocessorDirective includePreprocessorDirective);
 	
