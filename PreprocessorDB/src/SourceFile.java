@@ -4,6 +4,7 @@ public class SourceFile {
 
 	private Configuration configuration;
 	private SourceFilePreprocessorDirectives filePreprocessorDirectives;
+	private String guardMacro;
 	private Path filePath;
 
 	public Configuration getConfiguration() {
@@ -20,6 +21,14 @@ public class SourceFile {
 
 	public void setFilePreprocessorDirectives(SourceFilePreprocessorDirectives filePreprocessorDirectives) {
 		this.filePreprocessorDirectives = filePreprocessorDirectives;
+	}
+
+	public String getGuardMacro() {
+		return guardMacro;
+	}
+
+	public void setGuardMacro(String guardMacro) {
+		this.guardMacro = guardMacro;
 	}
 
 	public Path getFilePath() {
