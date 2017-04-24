@@ -2,10 +2,11 @@ import java.util.AbstractCollection;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 public abstract class KeyedCollection<K, V> extends AbstractCollection<V> {
 
-	private final LinkedHashMap<K, V> map;
+	protected final Map<K, V> map;
 
 	public KeyedCollection() {
 		map = new LinkedHashMap<>();
@@ -43,12 +44,20 @@ public abstract class KeyedCollection<K, V> extends AbstractCollection<V> {
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public boolean contains(Object o) {
-		if (o == null) {
+		V value = (V) o;
+		return containsValue(value);
+	}
+
+	public boolean containsKey(K key) {
+		return map.containsKey(key);
+	}
+
+	public boolean containsValue(V value) {
+		if (value == null) {
 			throw new NullPointerException();
 		}
-		@SuppressWarnings("unchecked")
-		V value = (V) o;
 		K key = getKey(value);
 		return map.containsKey(key) && map.get(key).equals(value);
 	}
@@ -56,6 +65,14 @@ public abstract class KeyedCollection<K, V> extends AbstractCollection<V> {
 	@Override
 	public boolean containsAll(Collection<?> c) {
 		return super.containsAll(c);
+	}
+
+	public boolean containsAllKeys(Collection<K> c) {
+		return map.keySet().containsAll(c);
+	}
+
+	public boolean containsAllValues(Collection<V> c) {
+		return map.values().containsAll(c);
 	}
 
 	@Override
@@ -67,7 +84,15 @@ public abstract class KeyedCollection<K, V> extends AbstractCollection<V> {
 	public boolean remove(Object o) {
 		@SuppressWarnings("unchecked")
 		V value = (V) o;
+		return removeValue(value);
+	}
+
+	public boolean removeValue(V value) {
 		return map.remove(getKey(value), value);
+	}
+
+	public V removeKey(K key) {
+		return map.remove(key);
 	}
 
 	@Override
