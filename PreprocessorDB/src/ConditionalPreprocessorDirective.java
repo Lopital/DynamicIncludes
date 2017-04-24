@@ -4,14 +4,14 @@ import java.util.List;
 
 public class ConditionalPreprocessorDirective extends PreprocessorDirective {
 
-	private IConditionalPreprocessorBranch ifBranch;
+	private IConditionalPreprocessorFirstBranch ifBranch;
 	private List<IConditionalPreprocessorSecondBranch> branchs;
 
-	public IConditionalPreprocessorBranch getIfBranch() {
+	public IConditionalPreprocessorFirstBranch getIfBranch() {
 		return ifBranch;
 	}
 
-	public void setIfBranch(IConditionalPreprocessorBranch ifBranch) {
+	public void setIfBranch(IConditionalPreprocessorFirstBranch ifBranch) {
 		this.ifBranch = ifBranch;
 	}
 
@@ -23,10 +23,10 @@ public class ConditionalPreprocessorDirective extends PreprocessorDirective {
 		this.branchs = branchs;
 	}
 
-	public ConditionalPreprocessorDirective(){
+	public ConditionalPreprocessorDirective() {
 		this.branchs = new ArrayList<>();
 	}
-	
+
 	public Object accept(IPreprocessorVisitor visitor) {
 		return visitor.visit(this);
 	}
