@@ -5,6 +5,7 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -30,7 +31,20 @@ public final class GrammarManager {
 		SourceFilePreprocessorDirectives sourceFile = extractor.getSourceFile();
 		String guardMacro = getGuardMacro(sourceFile);
 		sourceFile.setGuardMacro(guardMacro);
+		List<String> dependencies = getDependencies(sourceFile);
 		return sourceFile;
+	}
+
+	private List<String> getDependencies(SourceFilePreprocessorDirectives sourceFile) {
+		//TODO extract dependencies!
+		List<String> deps = new ArrayList<>();
+		
+		/* visitor that traverse all conditional directives
+		 * parser for #if condition
+		 * data structure for condition
+		 */
+		
+		return deps;
 	}
 
 	private String getGuardMacro(SourceFilePreprocessorDirectives filePreprocessorDirectives) {
