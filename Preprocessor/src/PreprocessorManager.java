@@ -31,7 +31,7 @@ public final class PreprocessorManager {
 	}
 
 	private void updatePreprocessors(Project project) {
-		for (SourceFile sourceFile : project.getFiles()) {
+		for (SourceFile sourceFile : project.getSourceFiles()) {
 
 			SourceFilePreprocessorDirectives filePreprocessorDirectives = null;
 
