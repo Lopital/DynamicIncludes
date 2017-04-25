@@ -2,7 +2,8 @@
 public class Project {
 
 	private Configuration configuration;
-	private SourceFileKeyedCollection files;
+	private SourceFileKeyedCollection sourceFiles;
+	private SourceFileKeyedCollection headerFiles;
 
 	public Configuration getConfiguration() {
 		return configuration;
@@ -12,11 +13,19 @@ public class Project {
 		this.configuration = configuration;
 	}
 
-	public SourceFileKeyedCollection getFiles() {
-		return files;
+	public SourceFileKeyedCollection getSourceFiles() {
+		return sourceFiles;
 	}
 
-	public void setFiles(SourceFileKeyedCollection files) {
-		this.files = files;
+	public void setSourceFiles(SourceFileKeyedCollection files) {
+		this.sourceFiles = files;
+	}
+
+	public SourceFileKeyedCollection getHeaderFiles() {
+		return headerFiles;
+	}
+
+	public void setHeaderFiles(SourceFileKeyedCollection headerFiles) {
+		this.headerFiles = headerFiles;
 	}
 }
