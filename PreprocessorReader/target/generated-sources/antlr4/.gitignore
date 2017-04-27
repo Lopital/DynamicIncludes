@@ -4,3 +4,9 @@
 /CLangPreprocessorParser.tokens
 /CLangPreprocessorParserBaseListener.java
 /CLangPreprocessorParserListener.java
+/PreprocessorConditionLexer.java
+/PreprocessorConditionLexer.tokens
+/PreprocessorConditionParser.java
+/PreprocessorConditionParser.tokens
+/PreprocessorConditionParserBaseListener.java
+/PreprocessorConditionParserListener.java
