@@ -14,6 +14,10 @@ public abstract class KeyedCollection<K, V> extends AbstractCollection<V> {
 
 	protected abstract K getKey(V value);
 
+	public V get(K key) {
+		return map.get(key);
+	}
+	
 	@Override
 	public Iterator<V> iterator() {
 		return map.values().iterator();
