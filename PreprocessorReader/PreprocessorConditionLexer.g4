@@ -7,16 +7,16 @@ lexer grammar PreprocessorConditionLexer;
   bitwise operations, shifts, comparisons, and logical operations (&& and ||).
   The latter two obey the usual short-circuiting rules of standard C.
 -Macros. All macros in the expression are expanded before actual computation of
-  the expression’s value begins.
+  the expressionï¿½s value begins.
 -Uses of the defined operator, which lets you check whether macros are defined
-  in the middle of an ‘#if’.
+  in the middle of an ï¿½#ifï¿½.
 -Identifiers that are not macros, which are all considered to be the number zero.
   This allows you to write #if MACRO instead of #ifdef MACRO, if you know that
   MACRO, when defined, will always have a nonzero value. Function-like macros
   used without their function call parentheses are also treated as zero.
 - The numeric value of character constants in preprocessor expressions.
   The preprocessor and compiler interpret character constants in the same way;
-  i.e. escape sequences such as ‘\a’ are given the values they would have on the
+  i.e. escape sequences such as ï¿½\aï¿½ are given the values they would have on the
   target machine.
   The compiler evaluates a multi-character character constant a character at a
   time, shifting the previous value left by the number of bits per target
@@ -26,47 +26,67 @@ lexer grammar PreprocessorConditionLexer;
   not. If there are more characters in the constant than would fit in the target
   int the compiler issues a warning, and the excess leading characters are ignored.
   For example, 'ab' for a target with an 8-bit char would be interpreted as
-  ‘(int) ((unsigned char) 'a' * 256 + (unsigned char) 'b')’, and '\234a' as
-  ‘(int) ((unsigned char) '\234' * 256 + (unsigned char) 'a')’.
+  ï¿½(int) ((unsigned char) 'a' * 256 + (unsigned char) 'b')ï¿½, and '\234a' as
+  ï¿½(int) ((unsigned char) '\234' * 256 + (unsigned char) 'a')ï¿½.
  */
 
-CONCAT				: '##' ;
+HEX					: '0'[xX]HEXDIGIT+ ;
+OCTAL				: '0' OCTALDIGIT+ ;
+INTEGER				: DIGIT+ ;
+DEFINED 			: 'defined' ;
+IDENT 				: WORD_CHAR (WORD_CHAR|DIGIT)* ;
+
+HASHHASH			: '##' ;
 HASH				: '#' ;
+COMMA				: ',' ;
 
-
-
+LBRACKET			: '(' ;
+RBRACKET			: ')' ;
 
 QUESTION			: '?' ;
 COLON				: ':' ;
-EQUALS				: '=' ;
+EQLOWER				: '=<' ;
+EQGREATER			: '=>' ;
+EQUALS				: '==' ;
+NOT 				: '!' ;
 LOWER				: '<' ;
 GREATER				: '>' ;
+OR					: '||' ;
+AND 				: '&&' ;
+
+
 LBRACE				: '{' ;
 RBRACE				: '}' ;
 LSBRACKET			: '[' ;
 RSBRACKET			: ']' ;
-LBRACKET			: '(' ;
-RBRACKET			: ')' ;
-COMMA_				: ',' ;
+ASSIGNE 			: '=' ;
 SEMICOLON			: ';' ;
-NEGATION			: '!' ;
-OR					: '|' ;
-AND					: '&' ;
+DOT					: '.' ;
+SLASH				: '\\' ;
+
+BOR					: '|' ;
+BAND 				: '&' ;
 BNERATION			: '~' ;
+LSHIFT				: '<<' ;
+RSHIFT				: '>>' ;
+
 ADD					: '+' ;
 MINUS				: '-' ;
 MULTIPLICATION		: '*' ;
 DIVISION			: '/' ;
-DOT					: '.' ;
 PERCENT				: '%' ;
 POW					: '^' ;
-SLASH				: '\\' ;
 
-
-
-
-
-WS 					: [ \t] ->skip ;
+WS 					: [ \t] -> skip ;
+TEXT				: '"' ('\\'. | ~["\\])* '"' ;
+CHARACTER			: '\'' ('\\'.| ~['\\])+ '\'' ;
 
 //unrecognized char
-DUMMY : . -> skip ;
+DUMMY : . ;
+
+
+fragment DIGIT		: [0-9];
+fragment HEXDIGIT	: [0-9a-fA-F];
+fragment OCTALDIGIT	: [0-7];
+fragment LETTER		: [A-Za-z];
+fragment WORD_CHAR	: LETTER | '_' ;
