@@ -45,16 +45,37 @@ RBRACKET			: ')' ;
 
 QUESTION			: '?' ;
 COLON				: ':' ;
-EQLOWER				: '=<' ;
-EQGREATER			: '=>' ;
-EQUALS				: '==' ;
-NOT 				: '!' ;
+
 LOWER				: '<' ;
+LOWEREQ				: '=<' ;
 GREATER				: '>' ;
-OR					: '||' ;
+GREATEREQ			: '=>' ;
+EQUALS				: '==' ;
+NOT_EQUALS 			: '!=' ;
+
+NOT 				: '!' ;
 AND 				: '&&' ;
+OR					: '||' ;
 
 
+BITWISE_NOT			: '~' ;
+BITWISE_AND 		: '&' ;
+BITWISE_XOR			: '^' ;
+BITWISE_OR			: '|' ;
+
+LEFT_SHIFT			: '<<' ;
+RIGHT_SHIFT			: '>>' ;
+
+ADD					: '+' ;
+SUBSTRACT			: '-' ;
+MULTIPLY			: '*' ;
+DIVIDE				: '/' ;
+PERCENT				: '%' ;
+
+WS 					: [ \t] -> skip ;
+CHARACTER			: '\'' ('\\'.| ~['\\]) '\'' ;
+
+//error tokens
 LBRACE				: '{' ;
 RBRACE				: '}' ;
 LSBRACKET			: '[' ;
@@ -63,23 +84,8 @@ ASSIGNE 			: '=' ;
 SEMICOLON			: ';' ;
 DOT					: '.' ;
 SLASH				: '\\' ;
-
-BOR					: '|' ;
-BAND 				: '&' ;
-BNERATION			: '~' ;
-LSHIFT				: '<<' ;
-RSHIFT				: '>>' ;
-
-ADD					: '+' ;
-MINUS				: '-' ;
-MULTIPLICATION		: '*' ;
-DIVISION			: '/' ;
-PERCENT				: '%' ;
-POW					: '^' ;
-
-WS 					: [ \t] -> skip ;
+MULTI_CHARACTER		: '\'' ('\\'.| ~['\\])+ '\'' ;
 TEXT				: '"' ('\\'. | ~["\\])* '"' ;
-CHARACTER			: '\'' ('\\'.| ~['\\])+ '\'' ;
 
 //unrecognized char
 DUMMY : . ;
