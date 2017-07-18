@@ -2,6 +2,10 @@ parser grammar CLangPreprocessorParser;
 
 options { tokenVocab=CLangPreprocessorLexer; }
 
+@header {
+    package antlr.generated;
+}
+
 sourceFile : (preprocessorDirective (NL preprocessorDirective)*)? NL? ;
 
 preprocessorDirective : 

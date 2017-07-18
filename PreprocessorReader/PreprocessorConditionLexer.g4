@@ -1,5 +1,9 @@
 lexer grammar PreprocessorConditionLexer;
 
+@header {
+    package antlr.generated;
+}
+
 /*
  * Integer constants.
 -Character constants, which are interpreted as they would be in normal code.

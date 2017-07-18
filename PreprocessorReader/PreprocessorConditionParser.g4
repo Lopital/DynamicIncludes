@@ -1,5 +1,9 @@
 parser grammar PreprocessorConditionParser;
 
+@header {
+    package antlr.generated;
+}
+
 options { tokenVocab=PreprocessorConditionLexer; }
 
 expr 		: val=INTEGER												# Integer

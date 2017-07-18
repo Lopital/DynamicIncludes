@@ -1,5 +1,9 @@
 lexer grammar CLangPreprocessorLexer;
 
+@header {
+    package antlr.generated;
+}
+
 //comments whitespace ignore
 LINE_COMMENT_PREP 	: LINE_COMMENT -> skip ;
 COMMENT_PREP 		: '/*' -> more, pushMode(Comment);
